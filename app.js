@@ -1,85 +1,38 @@
-// --- 1. Dictionaries ---
 const DICT_LETTERS = { 'A':'.-', 'B':'-...', 'C':'-.-.', 'D':'-..', 'E':'.', 'F':'..-.', 'G':'--.', 'H':'....', 'I':'..', 'J':'.---', 'K':'-.-', 'L':'.-..', 'M':'--', 'N':'-.', 'O':'---', 'P':'.--.', 'Q':'--.-', 'R':'.-.', 'S':'...', 'T':'-', 'U':'..-', 'V':'...-', 'W':'.--', 'X':'-..-', 'Y':'-.--', 'Z':'--..' };
 const DICT_NUMBERS = { '0':'-----', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.' };
 const DICT_SYMBOLS = { '.':'.-.-.-', ',':'--..--', '?':'..--..', "'":'.----.', '!':'-.-.--', '/':'-..-.', '(':'-.--.', ')':'-.--.-', '@':'.--.-.' };
 const MORSE_DICT = { ...DICT_LETTERS, ...DICT_NUMBERS, ...DICT_SYMBOLS };
 const REVERSE_DICT = Object.entries(MORSE_DICT).reduce((acc, [key, value]) => { acc[value] = key; return acc; }, {});
 
-// --- 2. Safari Zoom Prevention ---
+// Safari Zoom Prevention
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) e.preventDefault(); lastTouchEnd = now; }, false);
 document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
-// --- 3. DOM Elements ---
 const ui = {
-    bgAnim: document.getElementById('bg-animation'),
-    mainOutput: document.getElementById('main-output'),
-    currentMorseBuffer: document.getElementById('current-morse-buffer'),
-
-    // Inputs Containers
-    calcGrid: document.getElementById('calc-grid'),
-    keyboardGrid: document.getElementById('keyboard-grid'),
-    textInput: document.getElementById('text-input'),
-
-    // Toggles
+    bgAnim: document.getElementById('bg-animation'), mainOutput: document.getElementById('main-output'),
+    currentMorseBuffer: document.getElementById('current-morse-buffer'), calcGrid: document.getElementById('calc-grid'),
+    keyboardGrid: document.getElementById('keyboard-grid'), textInput: document.getElementById('text-input'),
     btnKeyboardToggle: document.getElementById('btn-keyboard-toggle'),
 
-    // Calc Buttons
     btnDot: document.getElementById('btn-dot'), btnDash: document.getElementById('btn-dash'), btnSpace: document.getElementById('btn-space'),
     btnDel: document.getElementById('btn-del'), btnSend: document.getElementById('btn-send'), btnReset: document.getElementById('btn-reset'),
 
-    // Modals
     btnSettings: document.getElementById('btn-settings'), btnCloseSettings: document.getElementById('btn-close-settings'), settingsModal: document.getElementById('settings-modal'),
     toggleSound: document.getElementById('toggle-sound'), toggleVibe: document.getElementById('toggle-vibe'), vibeDuration: document.getElementById('vibe-duration'),
     btnExportTxt: document.getElementById('btn-export-txt'), btnExportCsv: document.getElementById('btn-export-csv'), uiScaleSlider: document.getElementById('ui-scale'),
+
     btnGuide: document.getElementById('btn-guide'), btnCloseGuide: document.getElementById('btn-close-guide'), guideModal: document.getElementById('guide-modal'),
     gridLetters: document.getElementById('guide-grid-letters'), gridNumbers: document.getElementById('guide-grid-numbers'), gridSymbols: document.getElementById('guide-grid-symbols'),
 
-    // Camera
     btnCamera: document.getElementById('btn-camera'), cameraInput: document.getElementById('camera-input'), cropModal: document.getElementById('crop-modal'),
     btnCloseCrop: document.getElementById('btn-close-crop'), cropImage: document.getElementById('crop-image'), btnRunOcr: document.getElementById('btn-run-ocr')
 };
 
-// --- State Variables ---
-let currentMorseChar = "";
-let translatedMessage = "";
-let isKeyboardMode = false; // SPA State
-let isSoundEnabled = true;
-let isVibeEnabled = true;
-let vibeMultiplier = 1;
-let cropperInstance = null;
+let currentMorseChar = ""; let translatedMessage = ""; let isKeyboardMode = false;
+let isSoundEnabled = true; let isVibeEnabled = true; let vibeMultiplier = 1; let cropperInstance = null;
 
-// --- SPA GSAP Toggle Logic ---
-ui.btnKeyboardToggle.addEventListener('click', () => {
-    isKeyboardMode = !isKeyboardMode;
-
-    // Clear data on switch for clean UX
-    currentMorseChar = "";
-    translatedMessage = "";
-    ui.textInput.value = "";
-    updateDisplay();
-    triggerFeedback('dot', ui.btnKeyboardToggle);
-
-    if (isKeyboardMode) {
-        ui.btnKeyboardToggle.classList.add('active-keyboard-btn');
-        // Hide Grid, Show Textarea
-        gsap.to(ui.calcGrid, { opacity: 0, y: 20, duration: 0.2, onComplete: () => {
-            ui.calcGrid.style.display = 'none';
-            ui.keyboardGrid.style.display = 'block';
-            gsap.fromTo(ui.keyboardGrid, {opacity: 0, y: -20}, {opacity: 1, y: 0, duration: 0.3, ease: "back.out(1.7)", onComplete: () => ui.textInput.focus()});
-        }});
-    } else {
-        ui.btnKeyboardToggle.classList.remove('active-keyboard-btn');
-        // Hide Textarea, Show Grid
-        gsap.to(ui.keyboardGrid, { opacity: 0, y: -20, duration: 0.2, onComplete: () => {
-            ui.keyboardGrid.style.display = 'none';
-            ui.calcGrid.style.display = 'grid';
-            gsap.fromTo(ui.calcGrid, {opacity: 0, y: 20}, {opacity: 1, y: 0, duration: 0.3, ease: "back.out(1.7)"});
-        }});
-    }
-});
-
-// --- Hardware Feedback ---
+// --- Hardware Feedback (Audio strictly limited to dot/dash) ---
 let audioCtx;
 const initAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); };
 
@@ -93,10 +46,12 @@ const playTone = (durationMs) => {
     oscillator.start(); oscillator.stop(audioCtx.currentTime + (durationMs/1000));
 };
 
-const triggerFeedback = (type, btnElement) => {
+const triggerFeedback = (type, btnElement, playSound = false) => {
     const baseDuration = type === 'dot' ? 100 : 300;
     const scaledDuration = baseDuration * vibeMultiplier;
-    playTone(baseDuration);
+
+    if (playSound) playTone(baseDuration); // Sound only allowed if flag is true
+
     if (isVibeEnabled && navigator.vibrate) navigator.vibrate(scaledDuration);
     if (btnElement && isVibeEnabled) {
         btnElement.classList.add('visual-shake');
@@ -105,38 +60,55 @@ const triggerFeedback = (type, btnElement) => {
     }
 };
 
+// --- SPA GSAP Toggle ---
+ui.btnKeyboardToggle.addEventListener('click', () => {
+    isKeyboardMode = !isKeyboardMode;
+    ui.btnKeyboardToggle.setAttribute('aria-pressed', isKeyboardMode);
+
+    currentMorseChar = ""; translatedMessage = ""; ui.textInput.value = ""; updateDisplay();
+    triggerFeedback('dot', ui.btnKeyboardToggle, false); // No sound
+
+    if (isKeyboardMode) {
+        ui.btnKeyboardToggle.classList.add('active-keyboard-btn');
+        gsap.to(ui.calcGrid, { opacity: 0, y: 20, duration: 0.2, onComplete: () => {
+            ui.calcGrid.style.display = 'none'; ui.keyboardGrid.style.display = 'block';
+            gsap.fromTo(ui.keyboardGrid, {opacity: 0, y: -20}, {opacity: 1, y: 0, duration: 0.3, ease: "back.out(1.7)", onComplete: () => ui.textInput.focus()});
+        }});
+    } else {
+        ui.btnKeyboardToggle.classList.remove('active-keyboard-btn');
+        gsap.to(ui.keyboardGrid, { opacity: 0, y: -20, duration: 0.2, onComplete: () => {
+            ui.keyboardGrid.style.display = 'none'; ui.calcGrid.style.display = 'grid';
+            gsap.fromTo(ui.calcGrid, {opacity: 0, y: 20}, {opacity: 1, y: 0, duration: 0.3, ease: "back.out(1.7)"});
+        }});
+    }
+});
+
 // --- Unified Display Logic ---
 const updateDisplay = () => {
     if (isKeyboardMode) {
-        // Outputting Morse
         ui.mainOutput.innerText = translatedMessage === "" ? "Awaiting input..." : translatedMessage;
-        ui.bgAnim.innerText = translatedMessage;
-        ui.currentMorseBuffer.innerText = ""; // Buffer unused in keyboard mode
+        ui.bgAnim.innerText = translatedMessage; ui.currentMorseBuffer.innerText = "";
     } else {
-        // Outputting Text
         ui.mainOutput.innerText = translatedMessage === "" ? "Awaiting input..." : translatedMessage;
-        ui.currentMorseBuffer.innerText = currentMorseChar;
-        ui.bgAnim.innerText = translatedMessage;
+        ui.currentMorseBuffer.innerText = currentMorseChar; ui.bgAnim.innerText = translatedMessage;
     }
 };
 
-// Keyboard Input Logic
 ui.textInput.addEventListener('input', (e) => {
     const rawText = e.target.value.toUpperCase();
     if (rawText.trim() === "") { translatedMessage = ""; updateDisplay(); return; }
     translatedMessage = rawText.split('').map(char => {
         if (char === ' ' || char === '\n') return '/';
         return MORSE_DICT[char] !== undefined ? MORSE_DICT[char] : char;
-    }).join(' ');
-    updateDisplay();
+    }).join(' '); updateDisplay();
 });
 
-// Calculator Logic
-ui.btnDot.addEventListener('click', () => { triggerFeedback('dot', ui.btnDot); currentMorseChar += "."; updateDisplay(); });
-ui.btnDash.addEventListener('click', () => { triggerFeedback('dash', ui.btnDash); currentMorseChar += "-"; updateDisplay(); });
-ui.btnSpace.addEventListener('click', () => { triggerFeedback('dot', ui.btnSpace); if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; } else { translatedMessage += " "; } updateDisplay(); });
+// --- Calculator Inputs (Sound Restricted) ---
+ui.btnDot.addEventListener('click', () => { triggerFeedback('dot', ui.btnDot, true); currentMorseChar += "."; updateDisplay(); });
+ui.btnDash.addEventListener('click', () => { triggerFeedback('dash', ui.btnDash, true); currentMorseChar += "-"; updateDisplay(); });
+ui.btnSpace.addEventListener('click', () => { triggerFeedback('dot', ui.btnSpace, false); if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; } else { translatedMessage += " "; } updateDisplay(); });
 
-const deleteAction = () => { if (currentMorseChar.length > 0) currentMorseChar = currentMorseChar.slice(0, -1); else if (translatedMessage.length > 0) translatedMessage = translatedMessage.slice(0, -1); updateDisplay(); triggerFeedback('dot', ui.btnDel); };
+const deleteAction = () => { if (currentMorseChar.length > 0) currentMorseChar = currentMorseChar.slice(0, -1); else if (translatedMessage.length > 0) translatedMessage = translatedMessage.slice(0, -1); updateDisplay(); triggerFeedback('dot', ui.btnDel, false); };
 const deleteWordAction = () => { if (translatedMessage.length > 0) { const lastSpaceIndex = translatedMessage.trimEnd().lastIndexOf(" "); translatedMessage = lastSpaceIndex === -1 ? "" : translatedMessage.substring(0, lastSpaceIndex + 1); currentMorseChar = ""; updateDisplay(); if (isVibeEnabled && navigator.vibrate) navigator.vibrate([50, 50, 50].map(v => v * vibeMultiplier)); } };
 
 let deleteTimer;
@@ -145,21 +117,38 @@ const endDelete = () => clearTimeout(deleteTimer);
 ui.btnDel.addEventListener('mousedown', startDelete); ui.btnDel.addEventListener('touchstart', startDelete, {passive: false});
 ui.btnDel.addEventListener('mouseup', endDelete); ui.btnDel.addEventListener('mouseleave', endDelete); ui.btnDel.addEventListener('touchend', endDelete);
 
-ui.btnReset.addEventListener('click', () => { currentMorseChar = ""; translatedMessage = ""; ui.textInput.value = ""; updateDisplay(); triggerFeedback('dash', ui.btnReset); });
-ui.btnSend.addEventListener('click', () => { if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; updateDisplay(); } ui.mainOutput.style.backgroundColor = 'var(--accent-color)'; ui.mainOutput.style.color = '#1e1e24'; setTimeout(() => { ui.mainOutput.style.backgroundColor = 'var(--bg-secondary)'; ui.mainOutput.style.color = 'var(--text-primary)'; }, 200); triggerFeedback('dash', ui.btnSend);});
+ui.btnReset.addEventListener('click', () => { currentMorseChar = ""; translatedMessage = ""; ui.textInput.value = ""; updateDisplay(); triggerFeedback('dash', ui.btnReset, false); });
+ui.btnSend.addEventListener('click', () => { if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; updateDisplay(); } ui.mainOutput.style.backgroundColor = 'var(--accent-color)'; ui.mainOutput.style.color = '#1e1e24'; setTimeout(() => { ui.mainOutput.style.backgroundColor = 'var(--bg-secondary)'; ui.mainOutput.style.color = 'var(--text-primary)'; }, 200); triggerFeedback('dash', ui.btnSend, false);});
 
-// --- Guide, Modals & Copy ---
+// --- Guide, Modals & GSAP Tooltips ---
 const populateGrid = (dict, targetGrid) => {
     Object.entries(dict).forEach(([char, code]) => {
-        const item = document.createElement('div'); item.className = 'guide-item';
+        const item = document.createElement('div'); item.className = 'guide-item focus-ring';
+        item.setAttribute('tabindex', '0'); // Keyboard accessible
+        item.setAttribute('role', 'button');
         item.innerHTML = `<span>${char}</span><span class="guide-morse">${code}</span>`;
-        item.addEventListener('click', () => {
+
+        const copyAction = (e) => {
             navigator.clipboard.writeText(code).then(() => {
+                // Generate Tooltip
+                const rect = item.getBoundingClientRect();
+                const tooltip = document.createElement('div');
+                tooltip.className = 'copy-tooltip'; tooltip.innerText = 'Copied!';
+                document.body.appendChild(tooltip);
+
+                gsap.set(tooltip, { x: rect.left + (rect.width / 2) - 30, y: rect.top - 20, opacity: 0, scale: 0.8 });
+                gsap.to(tooltip, { y: rect.top - 40, opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", onComplete: () => {
+                    gsap.to(tooltip, { opacity: 0, y: rect.top - 50, duration: 0.2, delay: 0.5, onComplete: () => tooltip.remove() });
+                }});
+
                 item.style.backgroundColor = 'var(--accent-color)'; item.style.color = 'var(--bg-primary)';
                 if (isVibeEnabled && navigator.vibrate) navigator.vibrate(30 * vibeMultiplier);
                 setTimeout(() => { item.style.backgroundColor = ''; item.style.color = ''; }, 250);
             });
-        });
+        };
+
+        item.addEventListener('click', copyAction);
+        item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyAction(e); }});
         targetGrid.appendChild(item);
     });
 };
@@ -181,10 +170,8 @@ ui.cameraInput.addEventListener('change', (e) => {
             ui.cropImage.src = event.target.result; openModal(ui.cropModal);
             if (cropperInstance) cropperInstance.destroy();
             cropperInstance = new Cropper(ui.cropImage, { viewMode: 1, autoCropArea: 0.8, background: false });
-        };
-        reader.readAsDataURL(file);
-    }
-    e.target.value = '';
+        }; reader.readAsDataURL(file);
+    } e.target.value = '';
 });
 ui.btnCloseCrop.addEventListener('click', () => { closeModal(ui.cropModal); if (cropperInstance) cropperInstance.destroy(); });
 ui.btnRunOcr.addEventListener('click', async () => {
@@ -194,14 +181,9 @@ ui.btnRunOcr.addEventListener('click', async () => {
     try {
         const result = await Tesseract.recognize(imageData, 'eng');
         let extractedText = result.data.text.trim();
-
-        // If we scan text, automatically switch to keyboard mode to output Morse
         if (extractedText) {
             if(!isKeyboardMode) ui.btnKeyboardToggle.click();
-            setTimeout(() => {
-                ui.textInput.value = extractedText;
-                ui.textInput.dispatchEvent(new Event('input'));
-            }, 300); // Wait for GSAP transition
+            setTimeout(() => { ui.textInput.value = extractedText; ui.textInput.dispatchEvent(new Event('input')); }, 300);
         }
         closeModal(ui.cropModal); if (cropperInstance) cropperInstance.destroy();
     } catch (err) { alert("Failed to scan text."); } finally { ui.btnRunOcr.innerHTML = originalText; ui.btnRunOcr.disabled = false; }
@@ -218,7 +200,6 @@ ui.btnExportTxt.addEventListener('click', () => {
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([textToExport], { type: "text/plain" }));
     a.download = "doT.dasH_Export.txt"; a.click();
 });
-
 ui.btnExportCsv.addEventListener('click', () => {
     let textToExport = translatedMessage; if (!textToExport) return;
     const csvContent = `Timestamp,Translation\n"${new Date().toLocaleString()}","${textToExport.replace(/"/g, '""')}"`;
