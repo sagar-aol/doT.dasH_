@@ -4,7 +4,7 @@
 
 :root {
   /* Core Sizing & Layout */
-  --app-scale: 0.9; /* Reduced initial scale */
+  --app-scale: 0.9;
   --spacing-sm: 0.5rem;
   --spacing: 1.25rem;
   --border-radius: 1rem;
@@ -33,10 +33,10 @@
   --btn-calc-bg: #eae5dc;
   --btn-calc-text: #4a4a5a;
   --danger-color: #ff9aa2;
-  --csv-btn-color: #6fcfa6; /* Pastel Green for CSV */
+  --csv-btn-color: #6fcfa6;
 
   /* Typography */
-  --font-main: "Courier Prime", Courier, monospace; /* Old school typewriter font */
+  --font-main: "Courier Prime", Courier, monospace;
 
   /* Animations */
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -72,17 +72,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
-  }
 }
 
 html {
@@ -94,19 +83,18 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   -webkit-tap-highlight-color: transparent;
-  padding-bottom: 3rem;
-  overscroll-behavior-y: none;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+
+  /* App-like 100dvh lock */
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  transition: background-color 0.3s ease, color 0.3s ease;
   user-select: none;
 }
 
-button,
-input,
-textarea,
-.slider,
-.calc-btn {
+button, input, textarea, .slider, .calc-btn {
   touch-action: manipulation;
 }
 
@@ -117,15 +105,12 @@ textarea,
   border-radius: 0.2rem;
 }
 .visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
 }
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
+
+/* Global Scrollbar Customization */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }

@@ -24,9 +24,15 @@
         <span class="gap-space"></span>
         <span class="word-dash"><span class="grad-text">dasH</span></span>
       </h1>
-      <button id="btn-settings" aria-label="Open Settings" aria-haspopup="dialog" class="icon-btn focus-ring">
-        <span class="material-symbols-rounded">settings</span>
-      </button>
+
+      <div class="header-actions">
+        <button id="btn-guide" aria-label="Open Morse Translation Guide" aria-haspopup="dialog" class="icon-btn focus-ring">
+          <span class="material-symbols-rounded">help</span>
+        </button>
+        <button id="btn-settings" aria-label="Open Settings" aria-haspopup="dialog" class="icon-btn focus-ring">
+          <span class="material-symbols-rounded">settings</span>
+        </button>
+      </div>
     </header>
 
     <main class="app-container">
@@ -72,7 +78,7 @@
             </button>
           </div>
 
-          <div class="keyboard-input-group" id="keyboard-grid" style="display: none; opacity: 0">
+          <div class="keyboard-input-group" id="keyboard-grid" style="opacity: 0; visibility: hidden">
             <label for="text-input" class="visually-hidden">Type text to translate</label>
             <textarea id="text-input" class="focus-ring" placeholder="Type text to translate..."></textarea>
           </div>
@@ -80,11 +86,7 @@
       </section>
     </main>
 
-    <button id="btn-guide" aria-label="Open Morse Translation Guide" aria-haspopup="dialog" class="floating-action-btn focus-ring">
-      <span class="material-symbols-rounded">help</span>
-    </button>
-
-    <footer class="tiny-disclaimer">made with <span style="color: #840913; font-size: 0.8rem" aria-hidden="true">💜</span> by <a href="https://github.com/sagar-aol" target="https://github.com/sagar-aol" rel="noopener noreferrer author" class="focus-ring" style="text-decoration: underline; font-size: 0.8rem">sagar</a></footer>
+    <footer class="tiny-disclaimer">made with <span style="color: #840913; font-size: 0.8rem" aria-hidden="true">💜</span> by <a href="https://github.com/sagar-aol" target="_blank" rel="noopener noreferrer" class="focus-ring" style="text-decoration: underline; font-size: 0.8rem">sagar</a></footer>
 
     <div id="guide-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
       <div class="modal-content large-modal">
@@ -138,9 +140,7 @@
             <label class="switch"><input type="checkbox" id="toggle-vibe" class="focus-ring" checked /><span class="slider round"></span></label>
           </div>
           <hr class="divider" />
-          <div class="setting-row">
-            <label for="">Export</label>
-          </div>
+          <div class="setting-row"><label>Export</label></div>
           <div style="display: flex; align-items: center; justify-content: space-evenly; gap: 1rem">
             <button id="btn-export-txt" class="calc-btn action-btn focus-ring export-btn" aria-label="Export to Text File"><span class="material-symbols-rounded">description</span> TXT</button>
             <button id="btn-export-csv" class="calc-btn focus-ring export-btn csv-btn" aria-label="Export to CSV File"><span class="material-symbols-rounded">table</span> CSV</button>

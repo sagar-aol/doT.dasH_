@@ -2,20 +2,25 @@
    COMPONENTS: App Specific Styling
    ========================================================================== */
 
-/* Layout */
+/* Main Layout Architecture (100dvh Lock) */
 .app-container {
   max-width: var(--max-width-app);
   margin: 0 auto;
-  padding: var(--spacing);
+  padding: 0 var(--spacing);
   display: flex;
+  flex: 1; /* Pushes to fill space between header and footer */
   flex-direction: column;
   position: relative;
   z-index: 1;
+  overflow: hidden; /* Stops whole-page bouncing */
 }
+
 .unified-view {
   display: flex;
   flex-direction: column;
+  height: 100%;
   gap: var(--spacing);
+  padding-top: var(--spacing);
 }
 
 /* Background Animation */
@@ -47,6 +52,7 @@
 
 /* Header & Animated Logo */
 .app-header {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -57,6 +63,11 @@
   position: relative;
   z-index: 10;
 }
+.header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
 .logo {
   font-size: 2rem;
   display: flex;
@@ -140,13 +151,21 @@
   }
 }
 
-/* Main Output Display */
+/* =========================================================
+   THE 3-TIER LOCKED LAYOUT
+   ========================================================= */
+
+/* SECTION 1: Output Display (Grows and Scrolls) */
 .output-wrapper {
+  flex: 1; /* Takes all available height */
+  min-height: 0; /* Crucial: Allows flex-child to scroll internally */
+  display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
 }
 .large-display {
-  min-height: var(--display-min-height);
+  flex: 1; /* Expands to fill wrapper */
   font-size: 1.8rem;
   font-weight: bold;
   padding: var(--spacing);
@@ -162,9 +181,10 @@
   word-break: break-word;
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s ease;
-  overflow-y: auto;
+  overflow-y: auto; /* Vertically Scrollable */
 }
 
+/* Corner Actions inside Display */
 .display-controls {
   position: absolute;
   bottom: 0.8rem;
@@ -196,42 +216,50 @@
   border-color: var(--accent-1);
 }
 
-/* Current Morse Buffer */
+/* SECTION 2: Current Morse Buffer (Fixed Height, Scrolls Horizontally) */
 .display-current-morse {
+  flex-shrink: 0; /* Prevents squishing */
   font-size: 3rem;
   letter-spacing: 0px;
   text-align: left;
-  height: auto;
+  height: var(--buffer-height); /* Strict Height */
   display: flex;
   align-items: center;
   justify-content: flex-start;
   color: var(--accent-color);
-  /* margin-top: calc(var(--spacing) * -0.5); */
   width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  /* white-space: nowrap; */
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 0 var(--spacing-sm);
   -webkit-overflow-scrolling: touch;
   font-weight: bold;
 }
 
-/* Dynamic Input Areas */
+/* SECTION 3: Dynamic Input Area (Fixed Bottom, Scrolls Vertically if tiny screen) */
 #dynamic-input-container {
-  position: relative;
+  flex-shrink: 0;
+  display: grid; /* Stacks calculator and keyboard perfectly */
   width: 100%;
-  min-height: 280px;
+  max-height: 45vh; /* Safety check for tiny mobile screens */
+  overflow-y: auto; /* Scrollable if it hits max-height */
+  padding-bottom: 0.5rem;
+}
+
+.calculator-grid {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing);
+  width: 100%;
 }
 .keyboard-input-group {
+  grid-area: 1 / 1;
   width: 100%;
-  height: var(--keyboard-height);
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: flex;
 }
 textarea {
   width: 100%;
-  height: 100%;
+  min-height: var(--keyboard-height);
   padding: var(--spacing);
   font-size: 1.2rem;
   border: 2px solid var(--border-color);
@@ -240,16 +268,6 @@ textarea {
   color: var(--text-primary);
   resize: none;
   font-family: var(--font-main);
-}
-
-.calculator-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
 }
 
 /* Buttons */
@@ -267,7 +285,7 @@ textarea {
 }
 
 .calc-btn {
-  padding: var(--spacing);
+  padding: 0.2rem 1rem;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -294,66 +312,32 @@ textarea {
 .primary-input-btn {
   background-color: var(--bg-secondary);
   border: 2px solid var(--border-color);
-  padding: 2.5rem 1rem;
+  padding: 0.5rem 1rem;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 .primary-input-btn:hover {
   border-color: var(--accent-1);
 }
 
-.export-btn {
-  flex: 1;
-  font-size: 1rem;
-  padding: 1rem;
+/* Footer / Disclaimer */
+.tiny-disclaimer {
+  flex-shrink: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  padding-bottom: 8px;
+  z-index: 50;
 }
-.export-btn .material-symbols-rounded {
-  font-size: 1.5rem;
-  margin-right: 4px;
+.tiny-disclaimer a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: bold;
 }
-.csv-btn {
-  background-color: var(--csv-btn-color);
-  color: var(--bg-primary);
-}
-
-/* Floating Helper */
-.floating-action-btn {
-  position: fixed;
-  bottom: 2rem;
-  left: 1.5rem;
-  z-index: 100;
-  background: var(--bg-secondary);
-  padding: 0.5rem;
-  border-radius: 50%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-}
-.floating-action-btn:active {
-  transform: scale(0.9);
-}
-
-.visual-shake {
-  animation: shake 0.1s ease-in-out;
-}
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  25% {
-    transform: translateY(-3px);
-  }
-  50% {
-    transform: translateY(3px);
-  }
-  75% {
-    transform: translateY(-1px);
-  }
+.tiny-disclaimer a:hover,
+.tiny-disclaimer a:focus-visible {
+  text-decoration: underline;
+  color: var(--accent-color);
 }
 
 /* Modals */
@@ -484,6 +468,21 @@ input:checked + .slider:before {
   display: block;
   margin-top: 2rem;
 }
+
+.export-btn {
+  flex: 1;
+  font-size: 1rem;
+  padding: 1rem;
+}
+.export-btn .material-symbols-rounded {
+  font-size: 1.5rem;
+  margin-right: 4px;
+}
+.csv-btn {
+  background-color: var(--csv-btn-color);
+  color: var(--bg-primary);
+}
+
 /* Guide Grid & Tooltips */
 .guide-subtitle {
   font-size: 0.9rem;
@@ -548,6 +547,25 @@ input:checked + .slider:before {
   font-family: var(--font-main);
 }
 
+.visual-shake {
+  animation: shake 0.1s ease-in-out;
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+}
+
 .crop-modal-content {
   max-width: 500px;
 }
@@ -561,26 +579,4 @@ input:checked + .slider:before {
 img {
   display: block;
   max-width: 100%;
-}
-
-.tiny-disclaimer {
-  position: fixed;
-  bottom: 8px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 0.6rem;
-  color: var(--text-secondary);
-  z-index: 50;
-}
-.tiny-disclaimer a {
-  color: inherit;
-  text-decoration: none;
-  font-weight: bold;
-  pointer-events: auto;
-}
-.tiny-disclaimer a:hover,
-.tiny-disclaimer a:focus-visible {
-  text-decoration: underline;
-  color: var(--accent-color);
 }
