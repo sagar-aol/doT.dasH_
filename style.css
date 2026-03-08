@@ -22,12 +22,12 @@
   --bg-secondary: #2b2b36;
   --text-primary: #f0f0f5;
   --text-secondary: #a0a0b5;
-  --accent-color: #bfa2db;
+  --accent-color: #563A9C;
   --accent-hover: #d3bdf0;
   --border-color: #3f3f4e;
   --btn-calc-bg: #3a3a48;
   --btn-calc-text: #f0f0f5;
-  --danger-color: #db8a8a;
+  --danger-color: #883f1d;
 }
 
 * {
@@ -139,7 +139,7 @@ textarea,
   gap: var(--spacing);
 }
 
-/* Header & Logo */
+/* Header & Logo Architecture */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -151,9 +151,16 @@ textarea,
   position: relative;
   z-index: 10;
 }
+
 .logo {
   font-size: 2rem;
   display: flex;
+  align-items: baseline;
+}
+
+/* Structural wrappers for the pseudo-elements */
+.word-dot, .word-dash {
+  display: inline-flex;
   align-items: baseline;
 }
 
@@ -163,50 +170,62 @@ textarea,
   -webkit-background-clip: text;
   color: transparent;
   animation: gradientShift 6s ease infinite;
-  padding-right: 0.5rem;
 }
+
 @keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .gap-space {
   width: 1.5rem;
 }
-.dot-anim {
-    animation: bounce 1.2s infinite;
-    transform-origin: center;
-    scale: 2.5;
-    filter: drop-shadow(0px 3px 5px white);
+
+/* =========================================
+   PSEUDO-ELEMENT SYMBOLS (Independent Styling)
+   ========================================= */
+
+.word-dot::after {
+  content: ".";
+  display: inline-block;
+  color: var(--text-primary); /* Overrides any gradient weirdness */
+  margin-left: 2px;
+
+  /* User Custom Animations & Styles */
+  animation: bounce 1.2s infinite;
+  transform-origin: center;
+  scale: 2.5;
+  filter: drop-shadow(0px 3px 5px white);
 }
-.dash-anim {
-    animation: stretch-blink 1.8s infinite ease-in-out;
-    transform-origin: left;
-    scale: 1.5;
-    filter: drop-shadow(0px 3px 5px white);
-    height: fit-content;
+
+.word-dash::after {
+  content: "_";
+  display: inline-block;
+  color: var(--text-primary);
+  margin-left: 2px;
+  height: fit-content;
+
+  /* User Custom Animations & Styles */
+  animation: stretch-blink 1.8s infinite ease-in-out;
+  transform-origin: left;
+  scale: 1.5;
+  filter: drop-shadow(0px 3px 5px white);
 }
 
 @keyframes bounce {
- 0%, 100% {
+  0%, 100% {
     transform: translateY(0);
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-}
-50% {
+  }
+  50% {
     transform: translateY(-0.25em);
     animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
 }
-}
+
 @keyframes stretch-blink {
-  0%,
-  100% {
+  0%, 100% {
     transform: scaleX(1);
     opacity: 1;
   }
@@ -215,7 +234,6 @@ textarea,
     opacity: 0.4;
   }
 }
-
 /* Output */
 .output-wrapper {
   position: relative;
@@ -573,7 +591,9 @@ input:checked + .slider:before {
 
 /* GSAP Tooltip */
 .copy-tooltip {
-  position: fixed;
+  position: absolute;
+  bottom: 100%; /* Pushes it just above the top edge */
+  left: 50%; /* Centers it horizontally */
   background: var(--text-primary);
   color: var(--bg-primary);
   padding: 0.3rem 0.8rem;
@@ -583,6 +603,8 @@ input:checked + .slider:before {
   pointer-events: none;
   z-index: 2000;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  margin-bottom: 0.2rem; /* A tiny bit of breathing room */
 }
 
 .hidden {

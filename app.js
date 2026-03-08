@@ -130,18 +130,26 @@ const populateGrid = (dict, targetGrid) => {
 
         const copyAction = (e) => {
             navigator.clipboard.writeText(code).then(() => {
-                // Generate Tooltip
-                const rect = item.getBoundingClientRect();
+                // Check if a tooltip already exists to prevent spamming
+                if (item.querySelector('.copy-tooltip')) return;
+
+                // Create Tooltip and append DIRECTLY to the button
                 const tooltip = document.createElement('div');
-                tooltip.className = 'copy-tooltip'; tooltip.innerText = 'Copied!';
-                document.body.appendChild(tooltip);
+                tooltip.className = 'copy-tooltip';
+                tooltip.innerText = 'Copied!';
+                item.appendChild(tooltip);
 
-                gsap.set(tooltip, { x: rect.left + (rect.width / 2) - 30, y: rect.top - 20, opacity: 0, scale: 0.8 });
-                gsap.to(tooltip, { y: rect.top - 40, opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", onComplete: () => {
-                    gsap.to(tooltip, { opacity: 0, y: rect.top - 50, duration: 0.2, delay: 0.5, onComplete: () => tooltip.remove() });
-                }});
+                // Animate relative to its absolute position
+                gsap.fromTo(tooltip,
+                    { y: 10, opacity: 0, scale: 0.8, xPercent: -50 }, // xPercent centers it perfectly via GSAP
+                    { y: -5, opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", onComplete: () => {
+                        // Float up and fade out
+                        gsap.to(tooltip, { opacity: 0, y: -15, duration: 0.2, delay: 0.5, onComplete: () => tooltip.remove() });
+                    }}
+                );
 
-                item.style.backgroundColor = 'var(--accent-color)'; item.style.color = 'var(--bg-primary)';
+                item.style.backgroundColor = 'var(--accent-color)';
+                item.style.color = 'var(--bg-primary)';
                 if (isVibeEnabled && navigator.vibrate) navigator.vibrate(30 * vibeMultiplier);
                 setTimeout(() => { item.style.backgroundColor = ''; item.style.color = ''; }, 250);
             });
