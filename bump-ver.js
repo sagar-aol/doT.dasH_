@@ -1,6 +1,6 @@
 /**
  * VERSION BUMPER
- * Run this via terminal: node bump-version.js
+ * Run this via terminal: node bump-ver.js
  */
 
 const fs = require("fs");

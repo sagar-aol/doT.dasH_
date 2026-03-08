@@ -1,7 +1,8 @@
 // --- 1. Dictionaries ---
 const DICT_LETTERS = { A: ".-", B: "-...", C: "-.-.", D: "-..", E: ".", F: "..-.", G: "--.", H: "....", I: "..", J: ".---", K: "-.-", L: ".-..", M: "--", N: "-.", O: "---", P: ".--.", Q: "--.-", R: ".-.", S: "...", T: "-", U: "..-", V: "...-", W: ".--", X: "-..-", Y: "-.--", Z: "--.." };
 const DICT_NUMBERS = { 0: "-----", 1: ".----", 2: "..---", 3: "...--", 4: "....-", 5: ".....", 6: "-....", 7: "--...", 8: "---..", 9: "----." };
-const DICT_SYMBOLS = { ".": ".-.-.-", ",": "--..--", "?": "..--..", "'": ".----.", "!": "-.-.--", "/": "-..-.", "(": "-.--.", ")": "-.--.-", "@": ".--.-." };
+const DICT_SYMBOLS = { ".": ".-.-.-", ",": "--..--", "'": ".----.", '"': ".-..-.", ":": "---...", ";": "-.-.-.", _: "..--.-", "/": "-..-.", "+": ".-.-.", "-": "-....-", "=": "-...-" };
+const DICT_SPECIAL = { "?": "..--..", "¿": "..-.-", "!": "-.-.--", "¡": "--...-", "(": "-.--.", ")": "-.--.-", "@": ".--.-.", "&": ".-...", $: "...-..-" };
 const MORSE_DICT = { ...DICT_LETTERS, ...DICT_NUMBERS, ...DICT_SYMBOLS };
 const REVERSE_DICT = Object.entries(MORSE_DICT).reduce((acc, [key, value]) => {
   acc[value] = key;
@@ -59,6 +60,7 @@ const ui = {
   gridLetters: document.getElementById("guide-grid-letters"),
   gridNumbers: document.getElementById("guide-grid-numbers"),
   gridSymbols: document.getElementById("guide-grid-symbols"),
+  gridSpecial: document.getElementById("guide-grid-special"),
 
   btnCamera: document.getElementById("btn-camera"),
   cameraInput: document.getElementById("camera-input"),
@@ -308,6 +310,7 @@ const populateGrid = (dict, targetGrid) => {
 populateGrid(DICT_LETTERS, ui.gridLetters);
 populateGrid(DICT_NUMBERS, ui.gridNumbers);
 populateGrid(DICT_SYMBOLS, ui.gridSymbols);
+populateGrid(DICT_SPECIAL, ui.gridSpecial);
 
 const openModal = (modal) => modal.classList.add("show");
 const closeModal = (modal) => modal.classList.remove("show");
