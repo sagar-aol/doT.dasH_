@@ -1,5 +1,5 @@
 /**
- * REUSABLE VERSION BUMPER
+ * VERSION BUMPER
  * Run this via terminal: node bump-version.js
  */
 
@@ -48,7 +48,7 @@ const updatedHtml = html.replace(versionRegex, (match, major, minor, patch) => {
   }
 
   const newVersion = `ver ${maj}.${min}.${pat}`;
-  console.log(`🚀 Version bumped: ${match.replace(/<[^>]*>/g, "")} ➡️  ${newVersion}`);
+  console.log(`🚀 Patch Update: ${match.replace(/<[^>]*>/g, "")} ➡️  ${newVersion}`);
 
   return `<span class="version-info">${newVersion}</span>`;
 });
