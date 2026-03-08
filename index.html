@@ -2,8 +2,9 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>doT.dasH_</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -11,27 +12,13 @@
 <body>
 
     <header class="app-header">
-        <h1>doT.dasH_</h1>
-        <div class="mode-toggle">
-            <span class="mode-label">MORSE</span>
-            <label class="switch">
-                <input type="checkbox" id="ui-switch">
-                <span class="slider round"></span>
-            </label>
-            <span class="mode-label">TXT</span>
-        </div>
-        <div class="header-actions">
-            <button id="btn-guide" aria-label="Morse Guide" class="icon-btn">
-                <span class="material-symbols-rounded">help</span>
-            </button>
-            <button id="btn-settings" aria-label="Settings" class="icon-btn">
-                <span class="material-symbols-rounded">settings</span>
-            </button>
-        </div>
+        <h1 class="logo">doT.dasH<span class="cursor-blink">_</span></h1>
+        <button id="btn-settings" aria-label="Settings" class="icon-btn">
+            <span class="material-symbols-rounded">settings</span>
+        </button>
     </header>
 
     <main class="app-container">
-
         <section id="view-morse-to-text" class="view-section active">
             <div class="output-group">
                 <div class="output-display large-display" id="text-output" aria-live="polite">
@@ -41,24 +28,12 @@
             </div>
 
             <div class="calculator-grid">
-                <button class="calc-btn" id="btn-dot" aria-label="Dot">
-                    <span class="material-symbols-rounded">circle</span>
-                </button>
-                <button class="calc-btn" id="btn-dash" aria-label="Dash">
-                    <span class="material-symbols-rounded">horizontal_rule</span>
-                </button>
-                <button class="calc-btn" id="btn-space" aria-label="Space">
-                    <span class="material-symbols-rounded">space_bar</span>
-                </button>
-                <button class="calc-btn" id="btn-del" aria-label="Delete">
-                    <span class="material-symbols-rounded">backspace</span>
-                </button>
-                <button class="calc-btn danger-btn" id="btn-reset" aria-label="Reset">
-                    <span class="material-symbols-rounded">restart_alt</span>
-                </button>
-                <button class="calc-btn primary-btn" id="btn-send" aria-label="Send">
-                    <span class="material-symbols-rounded">send</span>
-                </button>
+                <button class="calc-btn" id="btn-dot" aria-label="Dot"><span class="material-symbols-rounded">circle</span></button>
+                <button class="calc-btn" id="btn-dash" aria-label="Dash"><span class="material-symbols-rounded">horizontal_rule</span></button>
+                <button class="calc-btn" id="btn-space" aria-label="Space"><span class="material-symbols-rounded">space_bar</span></button>
+                <button class="calc-btn" id="btn-del" aria-label="Delete"><span class="material-symbols-rounded">backspace</span></button>
+                <button class="calc-btn danger-btn" id="btn-reset" aria-label="Reset"><span class="material-symbols-rounded">restart_alt</span></button>
+                <button class="calc-btn primary-btn" id="btn-send" aria-label="Send"><span class="material-symbols-rounded">send</span></button>
             </div>
         </section>
 
@@ -78,8 +53,25 @@
                 <textarea id="text-input" placeholder="Type text or scan an image..."></textarea>
             </div>
         </section>
-
     </main>
+
+    <footer class="app-footer">
+        <p>More languages to be added soon...</p>
+    </footer>
+
+    <div class="floating-controls">
+        <button id="btn-guide" aria-label="Morse Guide" class="floating-action-btn">
+            <span class="material-symbols-rounded">help</span>
+        </button>
+
+        <div class="floating-toggle-container">
+            <span id="toggle-label" class="mode-label active-label">MORSE</span>
+            <label class="switch">
+                <input type="checkbox" id="ui-switch">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
 
     <div id="guide-modal" class="modal">
         <div class="modal-content">
@@ -87,8 +79,7 @@
                 <h2>Translation Guide</h2>
                 <button id="btn-close-guide" class="icon-btn"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <div class="modal-body guide-grid" id="guide-grid">
-                </div>
+            <div class="modal-body guide-grid" id="guide-grid"></div>
         </div>
     </div>
 
@@ -98,9 +89,7 @@
                 <h2>Crop Text</h2>
                 <button id="btn-close-crop" class="icon-btn"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <div class="crop-container">
-                <img id="crop-image" src="" alt="To crop">
-            </div>
+            <div class="crop-container"><img id="crop-image" src="" alt="To crop"></div>
             <button id="btn-run-ocr" class="calc-btn primary-btn" style="width:100%; margin-top:1rem;">
                 <span class="material-symbols-rounded">document_scanner</span> Translate
             </button>
@@ -121,17 +110,15 @@
                 <hr class="divider">
                 <div class="setting-row">
                     <label for="toggle-sound">Sound (Beeps)</label>
-                    <label class="switch">
-                        <input type="checkbox" id="toggle-sound" checked>
-                        <span class="slider round"></span>
-                    </label>
+                    <label class="switch"><input type="checkbox" id="toggle-sound" checked><span class="slider round"></span></label>
                 </div>
                 <div class="setting-row">
-                    <label for="toggle-vibe">Haptic Vibration</label>
-                    <label class="switch">
-                        <input type="checkbox" id="toggle-vibe" checked>
-                        <span class="slider round"></span>
-                    </label>
+                    <label for="toggle-vibe">Haptics</label>
+                    <label class="switch"><input type="checkbox" id="toggle-vibe" checked><span class="slider round"></span></label>
+                </div>
+                <div class="setting-row">
+                    <label for="vibe-duration" style="font-size: 1rem; color: var(--text-secondary);">Haptic Duration (Strength)</label>
+                    <input type="range" id="vibe-duration" min="0.5" max="2" step="0.1" value="1" class="range-slider">
                 </div>
                 <hr class="divider">
                 <button id="btn-export" class="calc-btn primary-btn" style="width:100%;">
