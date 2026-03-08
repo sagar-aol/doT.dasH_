@@ -198,32 +198,22 @@
 
 /* Current Morse Buffer */
 .display-current-morse {
-  font-size: 3rem;
-  letter-spacing: 5px;
-  text-align: left;
-  height: var(--buffer-height);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  color: var(--accent-color);
-  margin-top: calc(var(--spacing) * -0.5);
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  padding: 0 var(--spacing-sm);
-  -webkit-overflow-scrolling: touch;
-  font-weight: bold;
-}
-.display-current-morse::-webkit-scrollbar {
-  height: 4px;
-}
-.display-current-morse::-webkit-scrollbar-track {
-  background: transparent;
-}
-.display-current-morse::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
+    font-size: 3rem;
+    letter-spacing: 5px;
+    text-align: left;
+    height: var(--buffer-height);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--accent-color);
+    margin-top: calc(var(--spacing) * -0.5);
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* white-space: nowrap; */
+    padding: 0 var(--spacing-sm);
+    -webkit-overflow-scrolling: touch;
+    font-weight: bold;
 }
 
 /* Dynamic Input Areas */

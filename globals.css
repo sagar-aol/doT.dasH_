@@ -72,6 +72,17 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
 }
 
 html {
