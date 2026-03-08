@@ -13,64 +13,63 @@
     <div id="bg-animation" class="bg-animation"></div>
 
     <header class="app-header">
-        <h1 class="logo">doT<span class="dot-anim">.</span>dasH<span class="dash-anim">_</span></h1>
+        <h1 class="logo">
+            <span class="grad-text">doT</span><span class="dot-anim">.</span>
+            <span class="gap-space"></span>
+            <span class="grad-text">dasH</span><span class="dash-anim">_</span>
+        </h1>
         <button id="btn-settings" aria-label="Settings" class="icon-btn">
             <span class="material-symbols-rounded">settings</span>
         </button>
     </header>
 
     <main class="app-container">
-        <section id="view-morse-to-text" class="view-section active">
-            <div class="output-group">
-                <div class="output-display large-display" id="text-output" aria-live="polite">
+        <section class="unified-view">
+
+            <div class="output-wrapper">
+                <div class="output-display large-display" id="main-output" aria-live="polite">
                     <span class="placeholder">Awaiting input...</span>
                 </div>
-                <div class="display-current-morse" id="current-morse-buffer"></div>
-            </div>
 
-            <div class="calculator-grid">
-                <button class="calc-btn" id="btn-dot" aria-label="Dot"><span class="material-symbols-rounded">circle</span></button>
-                <button class="calc-btn" id="btn-dash" aria-label="Dash"><span class="material-symbols-rounded">horizontal_rule</span></button>
-                <button class="calc-btn" id="btn-space" aria-label="Space"><span class="material-symbols-rounded">space_bar</span></button>
-                <button class="calc-btn" id="btn-del" aria-label="Delete"><span class="material-symbols-rounded">backspace</span></button>
-                <button class="calc-btn danger-btn" id="btn-reset" aria-label="Reset"><span class="material-symbols-rounded">restart_alt</span></button>
-                <button class="calc-btn primary-btn" id="btn-send" aria-label="Send"><span class="material-symbols-rounded">send</span></button>
-            </div>
-        </section>
-
-        <section id="view-text-to-morse" class="view-section hidden">
-            <div class="output-group">
-                <div class="output-display large-display" id="morse-output" aria-live="polite">
-                    <span class="placeholder">...</span>
-                </div>
-            </div>
-            <div class="input-group">
-                <div class="text-input-header">
-                    <button id="btn-camera" class="calc-btn primary-btn small-btn" aria-label="Scan Text">
-                        <span class="material-symbols-rounded">photo_camera</span> Scan
+                <div class="display-controls">
+                    <button id="btn-keyboard-toggle" class="corner-btn" aria-label="Toggle Keyboard">
+                        <span class="material-symbols-rounded">keyboard</span>
+                    </button>
+                    <button id="btn-camera" class="corner-btn" aria-label="Scan Text">
+                        <span class="material-symbols-rounded">photo_camera</span>
                     </button>
                     <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
                 </div>
-                <textarea id="text-input" placeholder="Type text or scan an image..."></textarea>
             </div>
+
+            <div class="display-current-morse" id="current-morse-buffer"></div>
+
+            <div id="dynamic-input-container">
+
+                <div class="calculator-grid" id="calc-grid">
+                    <button class="calc-btn" id="btn-dot" aria-label="Dot"><span class="material-symbols-rounded">circle</span></button>
+                    <button class="calc-btn" id="btn-dash" aria-label="Dash"><span class="material-symbols-rounded">horizontal_rule</span></button>
+                    <button class="calc-btn" id="btn-space" aria-label="Space"><span class="material-symbols-rounded">space_bar</span></button>
+                    <button class="calc-btn" id="btn-del" aria-label="Delete"><span class="material-symbols-rounded">backspace</span></button>
+                    <button class="calc-btn danger-btn" id="btn-reset" aria-label="Reset"><span class="material-symbols-rounded">restart_alt</span></button>
+                    <button class="calc-btn primary-btn" id="btn-send" aria-label="Send"><span class="material-symbols-rounded">send</span></button>
+                </div>
+
+                <div class="keyboard-input-group" id="keyboard-grid" style="display: none; opacity: 0;">
+                    <textarea id="text-input" placeholder="Type text to translate..."></textarea>
+                </div>
+            </div>
+
         </section>
     </main>
 
-    <div class="floating-controls">
-        <button id="btn-guide" aria-label="Morse Guide" class="floating-action-btn">
-            <span class="material-symbols-rounded">help</span>
-        </button>
+    <button id="btn-guide" aria-label="Morse Guide" class="floating-action-btn">
+        <span class="material-symbols-rounded">help</span>
+    </button>
 
-        <div class="floating-toggle-container">
-            <span id="toggle-label" class="mode-label active-label">MORSE</span>
-            <label class="switch">
-                <input type="checkbox" id="ui-switch">
-                <span class="slider round"></span>
-            </label>
-        </div>
+    <div class="tiny-disclaimer">
+        Made with <span style="color: #ff4757; font-size: 0.8rem;">❤️</span> by <a href="https://github.com/sagar-aol" target="_blank">sagar-aol</a>
     </div>
-
-    <div class="tiny-disclaimer">More languages to be added soon...</div>
 
     <div id="guide-modal" class="modal">
         <div class="modal-content large-modal">
@@ -79,12 +78,10 @@
                 <button id="btn-close-guide" class="icon-btn"><span class="material-symbols-rounded">close</span></button>
             </div>
             <div class="modal-body">
-                <h3 class="guide-section-title">Alphabets</h3>
-                <div class="guide-grid" id="guide-grid-letters"></div>
-                <h3 class="guide-section-title">Numbers</h3>
-                <div class="guide-grid" id="guide-grid-numbers"></div>
-                <h3 class="guide-section-title">Symbols</h3>
-                <div class="guide-grid" id="guide-grid-symbols"></div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; text-align: center;">Tap any symbol to copy</p>
+                <h3 class="guide-section-title">Alphabets</h3><div class="guide-grid" id="guide-grid-letters"></div>
+                <h3 class="guide-section-title">Numbers</h3><div class="guide-grid" id="guide-grid-numbers"></div>
+                <h3 class="guide-section-title">Symbols</h3><div class="guide-grid" id="guide-grid-symbols"></div>
             </div>
         </div>
     </div>
@@ -119,23 +116,29 @@
                     <label class="switch"><input type="checkbox" id="toggle-sound" checked><span class="slider round"></span></label>
                 </div>
                 <div class="setting-row">
-                    <label for="toggle-vibe">Haptics <span style="font-size:0.8rem; color:var(--text-secondary);">(Android Only)</span></label>
+                    <label for="toggle-vibe">Haptics</label>
                     <label class="switch"><input type="checkbox" id="toggle-vibe" checked><span class="slider round"></span></label>
                 </div>
                 <div class="setting-row">
-                    <label for="vibe-duration" style="font-size: 1rem; color: var(--text-secondary);">Haptic/Visual Strength</label>
+                    <label for="vibe-duration" style="font-size: 1rem; color: var(--text-secondary);">Haptic Strength</label>
                     <input type="range" id="vibe-duration" min="0.5" max="2" step="0.1" value="1" class="range-slider">
                 </div>
                 <hr class="divider">
-                <button id="btn-export" class="calc-btn primary-btn" style="width:100%;">
-                    <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 8px;">save</span> Export to TXT
-                </button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button id="btn-export-txt" class="calc-btn primary-btn" style="flex: 1; font-size: 1rem; padding: 1rem;">
+                        <span class="material-symbols-rounded" style="font-size: 1.5rem; margin-right: 4px;">description</span> TXT
+                    </button>
+                    <button id="btn-export-csv" class="calc-btn primary-btn" style="flex: 1; font-size: 1rem; padding: 1rem; background-color: #20bf6b;">
+                        <span class="material-symbols-rounded" style="font-size: 1.5rem; margin-right: 4px;">table</span> CSV
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
