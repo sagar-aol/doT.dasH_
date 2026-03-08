@@ -1,0 +1,120 @@
+/* ==========================================================================
+   GLOBALS: Design Tokens & Resets
+   ========================================================================== */
+
+:root {
+  /* Core Sizing & Layout */
+  --app-scale: 0.9; /* Reduced initial scale */
+  --spacing-sm: 0.5rem;
+  --spacing: 1.25rem;
+  --border-radius: 1rem;
+
+  /* Container Constraints */
+  --max-width-app: 600px;
+  --display-min-height: 160px;
+  --buffer-height: 4.5rem;
+  --keyboard-height: 250px;
+
+  /* Universal 3-Accent System (Light Theme) */
+  --accent-1: #bfa2db; /* Primary: Pastel Purple */
+  --accent-2: #a2bce6; /* Action: Pastel Blue */
+  --accent-3: #ffb7b2; /* Highlight: Pastel Peach */
+
+  --accent-color: var(--accent-1);
+  --accent-hover: var(--accent-2);
+
+  /* Core Colors */
+  --bg-primary: #fdfbf7;
+  --bg-secondary: #f4f1ea;
+  --text-primary: #4a4a5a;
+  --text-secondary: #8b8b9e;
+
+  --border-color: #e5e0d8;
+  --btn-calc-bg: #eae5dc;
+  --btn-calc-text: #4a4a5a;
+  --danger-color: #ff9aa2;
+  --csv-btn-color: #6fcfa6; /* Pastel Green for CSV */
+
+  /* Typography */
+  --font-main: "Courier Prime", Courier, monospace; /* Old school typewriter font */
+
+  /* Animations */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] {
+  /* Universal 3-Accent System (Dark Theme) */
+  --accent-1: #d4bbf2;
+  --accent-2: #b8cff2;
+  --accent-3: #ffc4c0;
+
+  --accent-color: var(--accent-1);
+  --accent-hover: var(--accent-2);
+
+  /* Core Colors */
+  --bg-primary: #1e1e24;
+  --bg-secondary: #2b2b36;
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b5;
+
+  --border-color: #3f3f4e;
+  --btn-calc-bg: #3a3a48;
+  --btn-calc-text: #f0f0f5;
+  --danger-color: #ff8a96;
+  --csv-btn-color: #55a881;
+}
+
+/* Base Resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: calc(16px * var(--app-scale));
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom: 3rem;
+  overscroll-behavior-y: none;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  user-select: none;
+}
+
+button,
+input,
+textarea,
+.slider,
+.calc-btn {
+  touch-action: manipulation;
+}
+
+/* Accessibility Utilities */
+.focus-ring:focus-visible {
+  outline: 3px solid var(--accent-1);
+  outline-offset: 3px;
+  border-radius: 0.2rem;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.hidden {
+  display: none !important;
+}

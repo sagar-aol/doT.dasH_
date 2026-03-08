@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="doT.dasH_ - A seamless, accessible Morse code translator.">
     <title>doT.dasH_</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="globals.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -49,10 +55,10 @@
 
                 <div class="calculator-grid" id="calc-grid">
                     <button class="calc-btn primary-input-btn focus-ring" id="btn-dot" aria-label="Input Dot">
-                        <span class="material-symbols-rounded grad-text ">circle</span>
+                        <span class="material-symbols-rounded grad-text dot-anim">circle</span>
                     </button>
                     <button class="calc-btn primary-input-btn focus-ring" id="btn-dash" aria-label="Input Dash">
-                        <span class="material-symbols-rounded grad-text ">horizontal_rule</span>
+                        <span class="material-symbols-rounded grad-text dash-anim">horizontal_rule</span>
                     </button>
 
                     <button class="calc-btn secondary-btn focus-ring" id="btn-space" aria-label="Input Space">
@@ -83,7 +89,11 @@
     </button>
 
     <footer class="tiny-disclaimer">
-        Made with <span style="color: #ff4757; font-size: 0.8rem;" aria-hidden="true">❤️</span> by <a href="https://github.com/sagar-aol" target="_blank" rel="noopener noreferrer" class="focus-ring">https://github.com/sagar-aol</a>
+        Made with <span style="color: #840913; font-size: 0.8rem;" aria-hidden="true">❤️</span> by <a href="https://github.com/sagar-aol" target="https://github.com/sagar-aol" rel="noopener noreferrer" class="focus-ring">https://github.com/sagar-aol</a>
+        <span class="version-info" style="color: gray;
+    position: absolute;
+    right: 10px;
+    bottom: 0px; z-index: 0; font-size: 0.8rem;">ver 1.2</span>
     </footer>
 
     <div id="guide-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
@@ -93,7 +103,7 @@
                 <button id="btn-close-guide" class="icon-btn focus-ring" aria-label="Close Guide"><span class="material-symbols-rounded">close</span></button>
             </div>
             <div class="modal-body">
-                <p style="font-size: 0.7rem; color: var(--text-secondary); margin: 0; text-align: center;">Tap any symbol to copy</p>
+                <p class="guide-subtitle">Tap any symbol to copy</p>
                 <h3 class="guide-section-title">Alphabets</h3><div class="guide-grid" id="guide-grid-letters"></div>
                 <h3 class="guide-section-title">Numbers</h3><div class="guide-grid" id="guide-grid-numbers"></div>
                 <h3 class="guide-section-title">Symbols</h3><div class="guide-grid" id="guide-grid-symbols"></div>
@@ -120,31 +130,31 @@
                 <h2 id="settings-title">Settings</h2>
                 <button id="btn-close-settings" class="icon-btn focus-ring" aria-label="Close Settings"><span class="material-symbols-rounded">close</span></button>
             </div>
+            <hr class="divider">
             <div class="modal-body">
                 <div class="setting-row">
                     <label for="ui-scale">UI Scale</label>
-                    <input type="range" id="ui-scale" min="0.8" max="1.4" step="0.1" value="1" class="range-slider focus-ring">
+                    <input type="range" id="ui-scale" min="0.7" max="1.4" step="0.1" value="0.9" class="range-slider focus-ring">
                 </div>
-                <hr class="divider">
                 <div class="setting-row">
                     <label for="toggle-sound">Sound (Beeps)</label>
-                    <label class="switch"><input type="checkbox" id="toggle-sound" class="focus-ring" checked><span class="slider round"></span></label>
+                    <label class="switch"><input type="checkbox" id="toggle-sound" class="focus-ring"><span class="slider round"></span></label>
                 </div>
                 <div class="setting-row">
                     <label for="toggle-vibe">Haptics</label>
                     <label class="switch"><input type="checkbox" id="toggle-vibe" class="focus-ring" checked><span class="slider round"></span></label>
                 </div>
-                <div class="setting-row">
-                    <label for="vibe-duration" style="font-size: 1rem; color: var(--text-secondary);">Bounce Multiplier</label>
-                    <input type="range" id="vibe-duration" min="0.5" max="2" step="0.1" value="1" class="range-slider focus-ring">
-                </div>
                 <hr class="divider">
-                <div style="display: flex; gap: 0.5rem;">
-                    <button id="btn-export-txt" class="calc-btn action-btn focus-ring" style="flex: 1; font-size: 1rem; padding: 1rem;" aria-label="Export to Text File">
-                        <span class="material-symbols-rounded" style="font-size: 1.5rem; margin-right: 4px;">description</span> TXT
+                <div class="setting-row">
+                    <label for="Export-vibe">Export</label>
+
+                </div>
+                <div style="display: flex; gap: var(--spacing-sm);">
+                    <button id="btn-export-txt" class="calc-btn action-btn focus-ring export-btn" aria-label="Export to Text File">
+                        <span class="material-symbols-rounded">description</span> TXT
                     </button>
-                    <button id="btn-export-csv" class="calc-btn action-btn focus-ring" style="flex: 1; font-size: 1rem; padding: 1rem; background-color: #20bf6b;" aria-label="Export to CSV File">
-                        <span class="material-symbols-rounded" style="font-size: 1.5rem; margin-right: 4px;">table</span> CSV
+                    <button id="btn-export-csv" class="calc-btn focus-ring export-btn csv-btn" aria-label="Export to CSV File">
+                        <span class="material-symbols-rounded">table</span> CSV
                     </button>
                 </div>
             </div>

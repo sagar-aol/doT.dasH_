@@ -1,14 +1,16 @@
+// --- 1. Dictionaries ---
 const DICT_LETTERS = { 'A':'.-', 'B':'-...', 'C':'-.-.', 'D':'-..', 'E':'.', 'F':'..-.', 'G':'--.', 'H':'....', 'I':'..', 'J':'.---', 'K':'-.-', 'L':'.-..', 'M':'--', 'N':'-.', 'O':'---', 'P':'.--.', 'Q':'--.-', 'R':'.-.', 'S':'...', 'T':'-', 'U':'..-', 'V':'...-', 'W':'.--', 'X':'-..-', 'Y':'-.--', 'Z':'--..' };
 const DICT_NUMBERS = { '0':'-----', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....', '7':'--...', '8':'---..', '9':'----.' };
 const DICT_SYMBOLS = { '.':'.-.-.-', ',':'--..--', '?':'..--..', "'":'.----.', '!':'-.-.--', '/':'-..-.', '(':'-.--.', ')':'-.--.-', '@':'.--.-.' };
 const MORSE_DICT = { ...DICT_LETTERS, ...DICT_NUMBERS, ...DICT_SYMBOLS };
 const REVERSE_DICT = Object.entries(MORSE_DICT).reduce((acc, [key, value]) => { acc[value] = key; return acc; }, {});
 
-// Safari Zoom Prevention
+// --- 2. Safari Zoom Prevention ---
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => { const now = (new Date()).getTime(); if (now - lastTouchEnd <= 300) e.preventDefault(); lastTouchEnd = now; }, false);
 document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
+// --- 3. DOM Elements ---
 const ui = {
     bgAnim: document.getElementById('bg-animation'), mainOutput: document.getElementById('main-output'),
     currentMorseBuffer: document.getElementById('current-morse-buffer'), calcGrid: document.getElementById('calc-grid'),
@@ -19,7 +21,7 @@ const ui = {
     btnDel: document.getElementById('btn-del'), btnSend: document.getElementById('btn-send'), btnReset: document.getElementById('btn-reset'),
 
     btnSettings: document.getElementById('btn-settings'), btnCloseSettings: document.getElementById('btn-close-settings'), settingsModal: document.getElementById('settings-modal'),
-    toggleSound: document.getElementById('toggle-sound'), toggleVibe: document.getElementById('toggle-vibe'), vibeDuration: document.getElementById('vibe-duration'),
+    toggleSound: document.getElementById('toggle-sound'), toggleVibe: document.getElementById('toggle-vibe'),
     btnExportTxt: document.getElementById('btn-export-txt'), btnExportCsv: document.getElementById('btn-export-csv'), uiScaleSlider: document.getElementById('ui-scale'),
 
     btnGuide: document.getElementById('btn-guide'), btnCloseGuide: document.getElementById('btn-close-guide'), guideModal: document.getElementById('guide-modal'),
@@ -29,10 +31,15 @@ const ui = {
     btnCloseCrop: document.getElementById('btn-close-crop'), cropImage: document.getElementById('crop-image'), btnRunOcr: document.getElementById('btn-run-ocr')
 };
 
-let currentMorseChar = ""; let translatedMessage = ""; let isKeyboardMode = false;
-let isSoundEnabled = true; let isVibeEnabled = true; let vibeMultiplier = 1; let cropperInstance = null;
+// --- State Variables ---
+let currentMorseChar = "";
+let translatedMessage = "";
+let isKeyboardMode = false;
+let isSoundEnabled = false; // Disabled by default per request
+let isVibeEnabled = true;
+let cropperInstance = null;
 
-// --- Hardware Feedback (Audio strictly limited to dot/dash) ---
+// --- Hardware Feedback (Sound strictly limited to dot/dash) ---
 let audioCtx;
 const initAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); };
 
@@ -48,15 +55,13 @@ const playTone = (durationMs) => {
 
 const triggerFeedback = (type, btnElement, playSound = false) => {
     const baseDuration = type === 'dot' ? 100 : 300;
-    const scaledDuration = baseDuration * vibeMultiplier;
 
-    if (playSound) playTone(baseDuration); // Sound only allowed if flag is true
-
-    if (isVibeEnabled && navigator.vibrate) navigator.vibrate(scaledDuration);
+    if (playSound) playTone(baseDuration);
+    if (isVibeEnabled && navigator.vibrate) navigator.vibrate(baseDuration);
     if (btnElement && isVibeEnabled) {
         btnElement.classList.add('visual-shake');
-        btnElement.style.animationDuration = `${scaledDuration}ms`;
-        setTimeout(() => btnElement.classList.remove('visual-shake'), scaledDuration);
+        btnElement.style.animationDuration = `${baseDuration}ms`;
+        setTimeout(() => btnElement.classList.remove('visual-shake'), baseDuration);
     }
 };
 
@@ -66,7 +71,7 @@ ui.btnKeyboardToggle.addEventListener('click', () => {
     ui.btnKeyboardToggle.setAttribute('aria-pressed', isKeyboardMode);
 
     currentMorseChar = ""; translatedMessage = ""; ui.textInput.value = ""; updateDisplay();
-    triggerFeedback('dot', ui.btnKeyboardToggle, false); // No sound
+    triggerFeedback('dot', ui.btnKeyboardToggle, false);
 
     if (isKeyboardMode) {
         ui.btnKeyboardToggle.classList.add('active-keyboard-btn');
@@ -103,13 +108,13 @@ ui.textInput.addEventListener('input', (e) => {
     }).join(' '); updateDisplay();
 });
 
-// --- Calculator Inputs (Sound Restricted) ---
+// --- Calculator Inputs ---
 ui.btnDot.addEventListener('click', () => { triggerFeedback('dot', ui.btnDot, true); currentMorseChar += "."; updateDisplay(); });
 ui.btnDash.addEventListener('click', () => { triggerFeedback('dash', ui.btnDash, true); currentMorseChar += "-"; updateDisplay(); });
 ui.btnSpace.addEventListener('click', () => { triggerFeedback('dot', ui.btnSpace, false); if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; } else { translatedMessage += " "; } updateDisplay(); });
 
 const deleteAction = () => { if (currentMorseChar.length > 0) currentMorseChar = currentMorseChar.slice(0, -1); else if (translatedMessage.length > 0) translatedMessage = translatedMessage.slice(0, -1); updateDisplay(); triggerFeedback('dot', ui.btnDel, false); };
-const deleteWordAction = () => { if (translatedMessage.length > 0) { const lastSpaceIndex = translatedMessage.trimEnd().lastIndexOf(" "); translatedMessage = lastSpaceIndex === -1 ? "" : translatedMessage.substring(0, lastSpaceIndex + 1); currentMorseChar = ""; updateDisplay(); if (isVibeEnabled && navigator.vibrate) navigator.vibrate([50, 50, 50].map(v => v * vibeMultiplier)); } };
+const deleteWordAction = () => { if (translatedMessage.length > 0) { const lastSpaceIndex = translatedMessage.trimEnd().lastIndexOf(" "); translatedMessage = lastSpaceIndex === -1 ? "" : translatedMessage.substring(0, lastSpaceIndex + 1); currentMorseChar = ""; updateDisplay(); if (isVibeEnabled && navigator.vibrate) navigator.vibrate([50, 50, 50]); } };
 
 let deleteTimer;
 const startDelete = (e) => { e.preventDefault(); deleteAction(); deleteTimer = setTimeout(deleteWordAction, 600); };
@@ -118,39 +123,27 @@ ui.btnDel.addEventListener('mousedown', startDelete); ui.btnDel.addEventListener
 ui.btnDel.addEventListener('mouseup', endDelete); ui.btnDel.addEventListener('mouseleave', endDelete); ui.btnDel.addEventListener('touchend', endDelete);
 
 ui.btnReset.addEventListener('click', () => { currentMorseChar = ""; translatedMessage = ""; ui.textInput.value = ""; updateDisplay(); triggerFeedback('dash', ui.btnReset, false); });
-ui.btnSend.addEventListener('click', () => { if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; updateDisplay(); } ui.mainOutput.style.backgroundColor = 'var(--accent-color)'; ui.mainOutput.style.color = '#1e1e24'; setTimeout(() => { ui.mainOutput.style.backgroundColor = 'var(--bg-secondary)'; ui.mainOutput.style.color = 'var(--text-primary)'; }, 200); triggerFeedback('dash', ui.btnSend, false);});
+ui.btnSend.addEventListener('click', () => { if (currentMorseChar !== "") { translatedMessage += (REVERSE_DICT[currentMorseChar] || '?'); currentMorseChar = ""; updateDisplay(); } ui.mainOutput.style.backgroundColor = 'var(--accent-1)'; ui.mainOutput.style.color = '#1e1e24'; setTimeout(() => { ui.mainOutput.style.backgroundColor = 'var(--bg-secondary)'; ui.mainOutput.style.color = 'var(--text-primary)'; }, 200); triggerFeedback('dash', ui.btnSend, false);});
 
 // --- Guide, Modals & GSAP Tooltips ---
 const populateGrid = (dict, targetGrid) => {
     Object.entries(dict).forEach(([char, code]) => {
         const item = document.createElement('div'); item.className = 'guide-item focus-ring';
-        item.setAttribute('tabindex', '0'); // Keyboard accessible
-        item.setAttribute('role', 'button');
+        item.setAttribute('tabindex', '0'); item.setAttribute('role', 'button');
         item.innerHTML = `<span>${char}</span><span class="guide-morse">${code}</span>`;
 
         const copyAction = (e) => {
             navigator.clipboard.writeText(code).then(() => {
-                // Check if a tooltip already exists to prevent spamming
                 if (item.querySelector('.copy-tooltip')) return;
-
-                // Create Tooltip and append DIRECTLY to the button
-                const tooltip = document.createElement('div');
-                tooltip.className = 'copy-tooltip';
-                tooltip.innerText = 'Copied!';
+                const tooltip = document.createElement('div'); tooltip.className = 'copy-tooltip'; tooltip.innerText = 'Copied!';
                 item.appendChild(tooltip);
 
-                // Animate relative to its absolute position
-                gsap.fromTo(tooltip,
-                    { y: 10, opacity: 0, scale: 0.8, xPercent: -50 }, // xPercent centers it perfectly via GSAP
-                    { y: -5, opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", onComplete: () => {
-                        // Float up and fade out
-                        gsap.to(tooltip, { opacity: 0, y: -15, duration: 0.2, delay: 0.5, onComplete: () => tooltip.remove() });
-                    }}
-                );
+                gsap.fromTo(tooltip, { y: 10, opacity: 0, scale: 0.8, xPercent: -50 }, { y: -5, opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", onComplete: () => {
+                    gsap.to(tooltip, { opacity: 0, y: -15, duration: 0.2, delay: 0.5, onComplete: () => tooltip.remove() });
+                }});
 
-                item.style.backgroundColor = 'var(--accent-color)';
-                item.style.color = 'var(--bg-primary)';
-                if (isVibeEnabled && navigator.vibrate) navigator.vibrate(30 * vibeMultiplier);
+                item.style.backgroundColor = 'var(--accent-1)'; item.style.color = 'var(--bg-primary)';
+                if (isVibeEnabled && navigator.vibrate) navigator.vibrate(30);
                 setTimeout(() => { item.style.backgroundColor = ''; item.style.color = ''; }, 250);
             });
         };
@@ -200,7 +193,6 @@ ui.btnRunOcr.addEventListener('click', async () => {
 // --- Settings & Exports ---
 ui.toggleSound.addEventListener('change', (e) => isSoundEnabled = e.target.checked);
 ui.toggleVibe.addEventListener('change', (e) => isVibeEnabled = e.target.checked);
-ui.vibeDuration.addEventListener('input', (e) => vibeMultiplier = parseFloat(e.target.value));
 ui.uiScaleSlider.addEventListener('input', (e) => document.documentElement.style.setProperty('--app-scale', e.target.value));
 
 ui.btnExportTxt.addEventListener('click', () => {
