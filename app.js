@@ -5,7 +5,6 @@ const DICT_SPECIAL = { "?": "..--..", "¿": "..-.-", "!": "-.-.--", "¡": "--...
 const MORSE_DICT = { ...DICT_LETTERS, ...DICT_NUMBERS, ...DICT_SYMBOLS };
 const REVERSE_DICT = Object.entries(MORSE_DICT).reduce((acc, [key, value]) => { acc[value] = key; return acc; }, {});
 
-// Safari Zoom Prevention
 let lastTouchEnd = 0;
 document.addEventListener("touchend", (e) => { const now = new Date().getTime(); if (now - lastTouchEnd <= 300) e.preventDefault(); lastTouchEnd = now; }, false);
 document.addEventListener("touchstart", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
@@ -117,10 +116,10 @@ ui.btnDel.addEventListener("mousedown", startDelete); ui.btnDel.addEventListener
 ui.btnDel.addEventListener("mouseup", endDelete); ui.btnDel.addEventListener("mouseleave", endDelete); ui.btnDel.addEventListener("touchend", endDelete);
 
 ui.btnReset.addEventListener("click", () => { currentMorseChar = ""; translatedMessage = ""; ui.textInput.value = ""; updateDisplay(); triggerFeedback("dash", ui.btnReset, false); });
+
+// NO MORE FLASH EFFECT ON SEND
 ui.btnSend.addEventListener("click", () => {
   if (currentMorseChar !== "") { translatedMessage += REVERSE_DICT[currentMorseChar] || "?"; currentMorseChar = ""; updateDisplay(); }
-  ui.mainOutput.style.backgroundColor = "var(--accent-1)"; ui.mainOutput.style.color = "#1e1e24";
-  setTimeout(() => { ui.mainOutput.style.backgroundColor = "var(--bg-secondary)"; ui.mainOutput.style.color = "var(--text-primary)"; }, 200);
   triggerFeedback("dash", ui.btnSend, false);
 });
 

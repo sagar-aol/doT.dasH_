@@ -18,75 +18,104 @@
   <body>
     <div id="bg-animation" class="bg-animation" aria-hidden="true"></div>
 
-    <header class="app-header">
-      <h1 class="logo" aria-label="Dot Dash">
-        <span class="word-dot"><span class="grad-text">doT</span></span>
-        <span class="gap-space"></span>
-        <span class="word-dash"><span class="grad-text">dasH</span></span>
-      </h1>
+    <div class="snap-container">
 
-      <div class="header-actions">
-        <button id="btn-guide" aria-label="Open Morse Translation Guide" aria-haspopup="dialog" class="icon-btn focus-ring">
-          <span class="material-symbols-rounded">help</span>
-        </button>
-        <button id="btn-settings" aria-label="Open Settings" aria-haspopup="dialog" class="icon-btn focus-ring">
-          <span class="material-symbols-rounded">settings</span>
-        </button>
+      <div class="snap-page app-page">
+        <header class="app-header">
+          <h1 class="logo" aria-label="Dot Dash">
+            <span class="word-dot"><span class="grad-text">doT</span></span>
+            <span class="gap-space"></span>
+            <span class="word-dash"><span class="grad-text">dasH</span></span>
+          </h1>
+
+          <div class="header-actions">
+            <button id="btn-guide" aria-label="Open Morse Translation Guide" aria-haspopup="dialog" class="icon-btn focus-ring">
+              <span class="material-symbols-rounded">help</span>
+            </button>
+            <button id="btn-settings" aria-label="Open Settings" aria-haspopup="dialog" class="icon-btn focus-ring">
+              <span class="material-symbols-rounded">settings</span>
+            </button>
+          </div>
+        </header>
+
+        <main class="app-container">
+          <section class="unified-view">
+
+            <div class="scroll-area">
+                <div class="output-wrapper">
+                  <div class="output-display large-display focus-ring" id="main-output" aria-live="polite" tabindex="0">
+                    <span class="placeholder">Awaiting input...</span>
+                  </div>
+
+                  <div class="display-controls">
+                    <button id="btn-keyboard-toggle" class="corner-btn focus-ring" aria-label="Toggle Keyboard Input" aria-pressed="false">
+                      <span class="material-symbols-rounded">keyboard</span>
+                    </button>
+                    <button id="btn-camera" class="corner-btn focus-ring" aria-label="Scan Text with Camera" aria-haspopup="dialog">
+                      <span class="material-symbols-rounded">photo_camera</span>
+                    </button>
+                    <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden" aria-hidden="true" />
+                  </div>
+                </div>
+
+                <div class="display-current-morse" id="current-morse-buffer" aria-live="assertive"></div>
+            </div>
+
+            <div id="dynamic-input-container">
+              <div class="calculator-grid" id="calc-grid">
+                <button class="calc-btn primary-input-btn focus-ring" id="btn-dot" aria-label="Input Dot">
+                  <span class="material-symbols-rounded grad-text dot-anim">circle</span>
+                </button>
+                <button class="calc-btn primary-input-btn focus-ring" id="btn-dash" aria-label="Input Dash">
+                  <span class="material-symbols-rounded grad-text dash-anim">horizontal_rule</span>
+                </button>
+
+                <button class="calc-btn secondary-btn focus-ring" id="btn-space" aria-label="Input Space">
+                  <span class="material-symbols-rounded">space_bar</span>
+                </button>
+                <button class="calc-btn secondary-btn focus-ring" id="btn-del" aria-label="Delete last input">
+                  <span class="material-symbols-rounded">backspace</span>
+                </button>
+                <button class="calc-btn danger-btn focus-ring" id="btn-reset" aria-label="Reset all inputs">
+                  <span class="material-symbols-rounded">restart_alt</span>
+                </button>
+                <button class="calc-btn action-btn focus-ring" id="btn-send" aria-label="Confirm translation">
+                  <span class="material-symbols-rounded">send</span>
+                </button>
+              </div>
+
+              <div class="keyboard-input-group" id="keyboard-grid" style="opacity: 0; visibility: hidden;">
+                <label for="text-input" class="visually-hidden">Type text to translate</label>
+                <textarea id="text-input" class="focus-ring" placeholder="Type text to translate..."></textarea>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <div class="swipe-indicator">
+          <span class="material-symbols-rounded">expand_more</span>
+        </div>
       </div>
-    </header>
 
-    <main class="app-container">
-      <section class="unified-view">
-        <div class="output-wrapper">
-          <div class="output-display large-display focus-ring" id="main-output" aria-live="polite" tabindex="0">
-            <span class="placeholder">Awaiting input...</span>
-          </div>
+      <div class="snap-page about-page" id="about-section">
+        <div class="about-content">
+          <h2 class="about-title"><span class="grad-text">doT.dasH_</span></h2>
+          <p class="about-desc">A premium, accessible Morse code translator built with native web APIs, Haptic feedback engines, and Single-Page Application (SPA) architecture.</p>
 
-          <div class="display-controls">
-            <button id="btn-keyboard-toggle" class="corner-btn focus-ring" aria-label="Toggle Keyboard Input" aria-pressed="false">
-              <span class="material-symbols-rounded">keyboard</span>
-            </button>
-            <button id="btn-camera" class="corner-btn focus-ring" aria-label="Scan Text with Camera" aria-haspopup="dialog">
-              <span class="material-symbols-rounded">photo_camera</span>
-            </button>
-            <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden" aria-hidden="true" />
+          <div class="about-features">
+            <p>✔ Real-time Translation</p>
+            <p>✔ Web Audio Generation</p>
+            <p>✔ Optical Character Recognition</p>
+            <p>✔ WCAG 3.0 Accessible</p>
           </div>
         </div>
 
-        <div class="display-current-morse" id="current-morse-buffer" aria-live="assertive"></div>
+        <footer class="tiny-disclaimer">
+            made with <span style="color: #840913; font-size: 0.8rem" aria-hidden="true">💜</span> by <a href="https://github.com/sagar-aol" target="_blank" rel="noopener noreferrer" class="focus-ring" style="text-decoration: underline; font-size: 0.8rem">sagar</a>
+        </footer>
+      </div>
 
-        <div id="dynamic-input-container">
-          <div class="calculator-grid" id="calc-grid">
-            <button class="calc-btn primary-input-btn focus-ring" id="btn-dot" aria-label="Input Dot">
-              <span class="material-symbols-rounded grad-text dot-anim">circle</span>
-            </button>
-            <button class="calc-btn primary-input-btn focus-ring" id="btn-dash" aria-label="Input Dash">
-              <span class="material-symbols-rounded grad-text dash-anim">horizontal_rule</span>
-            </button>
-
-            <button class="calc-btn secondary-btn focus-ring" id="btn-space" aria-label="Input Space">
-              <span class="material-symbols-rounded">space_bar</span>
-            </button>
-            <button class="calc-btn secondary-btn focus-ring" id="btn-del" aria-label="Delete last input">
-              <span class="material-symbols-rounded">backspace</span>
-            </button>
-            <button class="calc-btn danger-btn focus-ring" id="btn-reset" aria-label="Reset all inputs">
-              <span class="material-symbols-rounded">restart_alt</span>
-            </button>
-            <button class="calc-btn action-btn focus-ring" id="btn-send" aria-label="Confirm translation">
-              <span class="material-symbols-rounded">send</span>
-            </button>
-          </div>
-
-          <div class="keyboard-input-group" id="keyboard-grid" style="opacity: 0; visibility: hidden">
-            <label for="text-input" class="visually-hidden">Type text to translate</label>
-            <textarea id="text-input" class="focus-ring" placeholder="Type text to translate..."></textarea>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="tiny-disclaimer">made with <span style="color: #840913; font-size: 0.8rem" aria-hidden="true">💜</span> by <a href="https://github.com/sagar-aol" target="_blank" rel="noopener noreferrer" class="focus-ring" style="text-decoration: underline; font-size: 0.8rem">sagar</a></footer>
+    </div>
 
     <div id="guide-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
       <div class="modal-content large-modal">
@@ -96,14 +125,10 @@
         </div>
         <div class="modal-body">
           <p class="guide-subtitle">Tap any symbol to copy Morse</p>
-          <h3 class="guide-section-title">Alphabets</h3>
-          <div class="guide-grid" id="guide-grid-letters"></div>
-          <h3 class="guide-section-title">Numbers</h3>
-          <div class="guide-grid" id="guide-grid-numbers"></div>
-          <h3 class="guide-section-title">Symbols</h3>
-          <div class="guide-grid" id="guide-grid-symbols"></div>
-          <h3 class="guide-section-title">Special</h3>
-          <div class="guide-grid" id="guide-grid-special"></div>
+          <h3 class="guide-section-title">Alphabets</h3><div class="guide-grid" id="guide-grid-letters"></div>
+          <h3 class="guide-section-title">Numbers</h3><div class="guide-grid" id="guide-grid-numbers"></div>
+          <h3 class="guide-section-title">Symbols</h3><div class="guide-grid" id="guide-grid-symbols"></div>
+          <h3 class="guide-section-title">Special</h3><div class="guide-grid" id="guide-grid-special"></div>
         </div>
       </div>
     </div>
@@ -145,7 +170,7 @@
             <button id="btn-export-txt" class="calc-btn action-btn focus-ring export-btn" aria-label="Export to Text File"><span class="material-symbols-rounded">description</span> TXT</button>
             <button id="btn-export-csv" class="calc-btn focus-ring export-btn csv-btn" aria-label="Export to CSV File"><span class="material-symbols-rounded">table</span> CSV</button>
           </div>
-          <span class="version-info">ver 1.0.7</span>
+          <span class="version-info">ver 2.0.0</span>
         </div>
       </div>
     </div>
